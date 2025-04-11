@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../Context/CartContext';
+import Navbar from '../Navbar/Navbar';
 
 const Products = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const {AddToCart} = useCart()
 
   const GetProducts = async () => {
     try {
       const res = await fetch("https://dummyjson.com/products");
       const result = await res.json();
       setData(result.products);
+      console.log(result)
     } catch (err) {
       console.error("Error fetching products:", err);
     } finally {
@@ -20,55 +26,64 @@ const Products = () => {
     GetProducts();
   }, []);
 
+
+  const OpenDetails = (id) => {
+    navigate(`/item/${id}`)
+    console.log("open details")
+  }
   return (
-    <div style={styles.wrapper}>
+    <div >
       {loading ? (
         <h1>Loading...</h1>
-      ) : (
+      ) : 
+
+      <div >
+        
+        <div style={styles.wrapper}> 
+
+        {
+
         data.map((item) => (
           <div key={item.id} style={styles.card}>
-            <img src={item.thumbnail} alt={item.title} style={styles.image} />
+           
+            <div style={styles.imgdiv} onClick={() => OpenDetails(item.id)}>
+
+              <img src={item.thumbnail} alt={item.title} style={styles.image} />
+            </div>
             <h2>{item.title}</h2>
             <p>{item.description}</p>
             <p><strong>Price:</strong> ${item.price}</p>
             <p><strong>Discount:</strong> {item.discountPercentage}%</p>
             <p><strong>Rating:</strong> {item.rating}</p>
             <p><strong>Stock:</strong> {item.stock}</p>
-            <p><strong>Category:</strong> {item.category}</p>
-            <p><strong>Brand:</strong> {item.brand}</p>
-            <p><strong>SKU:</strong> {item.sku}</p>
-            <p><strong>Weight:</strong> {item.weight}g</p>
-            <p><strong>Dimensions:</strong> {item.dimensions?.width} x {item.dimensions?.height} x {item.dimensions?.depth} mm</p>
-            <p><strong>Warranty:</strong> {item.warrantyInformation}</p>
-            <p><strong>Shipping:</strong> {item.shippingInformation}</p>
-            <p><strong>Status:</strong> {item.availabilityStatus}</p>
-            <p><strong>Return Policy:</strong> {item.returnPolicy}</p>
-            <p><strong>Minimum Order:</strong> {item.minimumOrderQuantity}</p>
-            <p><strong>Tags:</strong> {item.tags.join(', ')}</p>
-            <h4>Reviews:</h4>
-            {item.reviews?.map((review, index) => (
-              <div key={index} style={styles.review}>
-                <p><strong>{review.reviewerName}</strong> ({review.rating}★)</p>
-                <p>{review.comment}</p>
-              </div>
-            ))}
-            <p><strong>Created At:</strong> {new Date(item.meta.createdAt).toLocaleDateString()}</p>
-            <p><strong>Updated At:</strong> {new Date(item.meta.updatedAt).toLocaleDateString()}</p>
-            <p><strong>Barcode:</strong> {item.meta.barcode}</p>
-            <img src={item.meta.qrCode} alt="QR Code" style={{ width: 100, height: 100 }} />
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10 }}>
-              {item.images.map((img, idx) => (
-                <img key={idx} src={img} alt="Product" style={styles.smallImage} />
-              ))}
-            </div>
+
+            <button style={styles.cartButton} onClick={()=> AddToCart(item)}> 🛒 Add to Cart</button>
           </div>
         ))
-      )}
+        }
+        </div>
+
+      </div>
+      }
     </div>
   );
 };
 
 const styles = {
+  imgdiv: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  cartButton: {
+    marginTop: 20,
+    padding: '10px 20px',
+    backgroundColor: '#f2bf32',
+    color: 'white',
+    border: 'none',
+    borderRadius: 6,
+    cursor: 'pointer',
+    fontSize: 16
+  },
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -85,7 +100,7 @@ const styles = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
   },
   image: {
-    width: '100%',
+    width: '60%',
     height: 200,
     objectFit: 'cover',
     borderRadius: 10,
