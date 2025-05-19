@@ -7,14 +7,14 @@ export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
 
     useEffect(() => {
-        const StoredCart = localStorage.getItem('cartItem');
+        const StoredCart = localStorage.getItem('cartItems');
         if(StoredCart){
             setCartItems(JSON.parse(StoredCart));
         }
     }, [])
 
     useEffect(()=> {
-        localStorage.setItem('cartitem', JSON.stringify(cartItems))
+        localStorage.setItem('cartItems', JSON.stringify(cartItems))
     }, [cartItems])
 
     const AddToCart = (product) => {
@@ -32,7 +32,9 @@ export const CartProvider = ({ children }) => {
     };
 
     const RemoveFromcart = (product) => {
+        console.log("called")
         setCartItems((prev) => prev.filter((item) => item.id !== product.id));
+        toast.info("Item removed from cart");
     };
 
     return (

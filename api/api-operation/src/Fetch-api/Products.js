@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../Context/CartContext';
 import Navbar from '../Navbar/Navbar';
 
@@ -7,16 +7,16 @@ const Products = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const {AddToCart} = useCart()
+  const { AddToCart } = useCart()
 
   const GetProducts = async () => {
     try {
-      const res = await fetch("https://dummyjson.com/products");
+      const res = await fetch("https://dummyjson.com/products?limit=6");
       const result = await res.json();
       setData(result.products);
-      console.log(result)
+      //console.log(result)
     } catch (err) {
-      console.error("Error fetching products:", err);
+      //console.error("Error fetching products:", err);
     } finally {
       setLoading(false);
     }
@@ -29,47 +29,80 @@ const Products = () => {
 
   const OpenDetails = (id) => {
     navigate(`/item/${id}`)
-    console.log("open details")
+    //console.log("open details")
   }
   return (
     <div >
       {loading ? (
         <h1>Loading...</h1>
-      ) : 
+      ) :
 
-      <div >
-        
-        <div style={styles.wrapper}> 
+        <div >
 
-        {
+          <div style={styles.wrapper}>
 
-        data.map((item) => (
-          <div key={item.id} style={styles.card}>
-           
-            <div style={styles.imgdiv} onClick={() => OpenDetails(item.id)}>
+            {
 
-              <img src={item.thumbnail} alt={item.title} style={styles.image} />
-            </div>
-            <h2>{item.title}</h2>
-            <p>{item.description}</p>
-            <p><strong>Price:</strong> ${item.price}</p>
-            <p><strong>Discount:</strong> {item.discountPercentage}%</p>
-            <p><strong>Rating:</strong> {item.rating}</p>
-            <p><strong>Stock:</strong> {item.stock}</p>
+              data.map((item) => (
+                <>
+                  <div key={item.id} style={styles.card}>
 
-            <button style={styles.cartButton} onClick={()=> AddToCart(item)}> 🛒 Add to Cart</button>
+                    <div style={styles.imgdiv} onClick={() => OpenDetails(item.id)}>
+
+                      <img src={item.thumbnail} alt={item.title} style={styles.image} />
+                    </div>
+                    <h2>{item.title}</h2>
+                    <p>{item.description}</p>
+                    <p><strong>Price:</strong> ${item.price}</p>
+                    <p><strong>Discount:</strong> {item.discountPercentage}%</p>
+                    <p><strong>Rating:</strong> {item.rating}</p>
+                    <p><strong>Stock:</strong> {item.stock}</p>
+
+                    <button style={styles.cartButton} onClick={() => AddToCart(item)}> 🛒 Add to Cart</button>
+                  </div>
+
+                 
+                </>
+
+              ))
+            }
           </div>
-        ))
-        }
-        </div>
 
-      </div>
+          <div style={styles.seemorediv}>
+            <Link to="/seemore" style={styles.seeMoreButton}>
+              👀 See more...
+            </Link>
+          </div>
+
+        </div>
       }
     </div>
   );
 };
 
 const styles = {
+  seemorediv:{
+    margin: 30,
+    display: 'flex',
+    justifyContent:"center"
+    
+
+    // justifyContent: "center"
+  
+  }
+  ,
+  seeMoreButton: {
+    display: 'inline-block',
+    padding: '10px 20px',
+    backgroundColor: '#f2bf32',
+    color: 'white',
+    textDecoration: 'none',
+    borderRadius: 6,
+    fontSize: 16,
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s',
+    textAlign: 'center'
+  },  
   imgdiv: {
     display: 'flex',
     justifyContent: 'center',
